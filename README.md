@@ -1,66 +1,125 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## About the Tech Test 
+### Purpose
+The aim of the API is to allow authenticated users to request product data.
+To obtain a token, a user must register and log in.
+Once a user has a token, they are then able to access the end point to retrieve products 
+from the database, the response is displayed in JSON format.
+The requirements stated a minimum of five products,
+so I decided to restrict the number of products returned to 5 to ensure efficiency. 
+Users are also able to log out and delete their tokens.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### API Endpoints:
+#### Register
+**/api/register** - POST request - Requires a name, email and password to register a user.
+For example, to register a user, add the following to the body of the request:
+```
+{
+    "name": "John Doe",
+    "email": "john@doe.co.uk",
+    "password": "password"
+}
+```
 
-## About Laravel
+#### Login
+**/api/login** - POST request - Requires an email and password to log in a user.
+For example, to log in as an authenticated user, add the following to the body of the request:
+```
+{
+    "email": "john@doe.co.uk",
+    "password": "password"
+}
+```
+Once a user has logged in, they will receive a token which is required to access the product end point.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+#### Logout
+**/api/logout** - POST request - Requires a token to log out a user.
+For example, to log out a user, add the following to the body of the request:
+```
+{
+    "Authorization: Bearer <TOKEN>"
+}
+```
+Once a user has logged out, their token will be deleted.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Products
+**/api/products** - GET request - Requires a token to access the product end point.
+The end point retrieves a list of products available in the system.
+It is designed to return a maximum of five products at a time to ensure efficient data transfer and processing.
+For example, to access the product end point, add the following to the header of the request:
+```
+{
+    "Authorization: Bearer <TOKEN>"
+}
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Request Format
+- Method: GET
+- Authentication Required: Yes
+- Headers: Authorization: Bearer "TOKEN" 
+  - The token is obtained through the authentication process, typically by logging in.
 
-## Learning Laravel
+#### Response Format
+- Content-Type: application/json
+- Status Codes:
+  * 200 OK: Successfully retrieved the list of products.
+  * 401 Unauthorized: The request lacks valid authentication credentials.
+- Body:
+ A JSON array of product objects, each containing:
+  * id (integer): The unique identifier of the product.
+  * name (string): The name of the product.
+  * description (string): A brief description of the product.
+  * price (float): The price of the product.
+  * stock (integer): The quantity of the product in stock.
+  * on_order (integer): The quantity of the product currently on order.
+  * created_at (datetime): The creation date of the product record.
+  * updated_at (datetime): The last update date of the product record.
+  * deleted_at (datetime, nullable): The deletion date of the product record, if applicable.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### Example Request
+```
+GET /api/products
+Authorization: Bearer your_access_token_here
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### Example Response
+```
+[
+    {
+        "id": 1,
+        "name": "Product Name",
+        "description": "Product Description",
+        "price": 99.99,
+        "stock": 100,
+        "on_order": 0,
+        "created_at": "2023-01-01T00:00:00.000000Z",
+        "updated_at": "2023-01-01T00:00:00.000000Z",
+        "deleted_at": null
+    }
+]
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Authentication
+The API uses Laravel Sanctum to authenticate users.
+When a user registers and logs in, they receive a token which is required to access the product end point.
+The token is stored in the database and is deleted when a user logs out.
 
-## Laravel Sponsors
+### Testing
+The API has been tested using Postman.
+The tests include registering a user, logging in, accessing the product end point and logging out.
+The tests have been successful and the API is working as expected.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Unit Testing
+The API has been unit tested using [PEST PHP](https://pestphp.com/docs/why-pest).
+The tests include registering a user, logging in, accessing the product end point and logging out.
+I also tested for data integrity and data validation.
+The tests have been successful and the API is working as expected.
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Future Improvements
+- Implementing a front end to allow users to interact with the API.
+- Adding more features to the API such as updating user details, updating product details and adding new products.
+- Implementing a feature to allow users to reset their password.
+- Implementing a feature to allow users to delete their account.
+- Implementing a feature to allow users to view more than 5 products at a time.
+- Implementing a feature to allow users to search for products by name or description.
+- Implementing a feature to allow users to sort products by price or stock details.
+- Implementing a feature to allow users to filter products by price or stock details.
